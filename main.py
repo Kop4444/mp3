@@ -1,5 +1,4 @@
 import sys
-
 from PyQt5.QtCore import QUrl, QFileInfo, Qt, QTimer
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QSlider
@@ -7,16 +6,13 @@ from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLa
 class MusicPlayer(QWidget):
     def __init__(self):
         super().__init__()
-
         self.setWindowTitle("Музыкальный проигрыватель")
         self.setGeometry(100, 100, 400, 250)
-
         self.layout = QVBoxLayout()
 
         self.player = QMediaPlayer()
         self.playlist = QMediaPlaylist()
         self.player.setPlaylist(self.playlist)
-
         self.player.stateChanged.connect(self.print_state)
 
         self.btn_select_files = QPushButton("Выбрать аудиофайл(ы)")
@@ -65,10 +61,12 @@ class MusicPlayer(QWidget):
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_time)
 
-        self.setLayout(self.layout)
-
         self.label_track_name = QLabel()
         self.layout.addWidget(self.label_track_name)
+
+        self.setLayout(self.layout)
+
+        self.check_playlist_empty() 
 
     def select_files(self):
         file_paths, _ = QFileDialog.getOpenFileNames(self, "Выберите аудиофайлы", "", "Audio Files (*.mp3)")
@@ -113,8 +111,13 @@ class MusicPlayer(QWidget):
         if self.playlist.currentIndex() != -1:
             media = self.playlist.currentMedia()
             self.label_track_name.setText("Текущий трек: " + media.canonicalUrl().fileName())
-    def print_state (self, state):
+
+    def print_state(self, state):
         print("Состояние проигрывателя изменилось:", state)
+
+    def check_playlist_empty(self):
+        if self.playlist.isEmpty():
+            self.label_status.setText("Трек не выбран")
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
