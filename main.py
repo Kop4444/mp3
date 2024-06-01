@@ -1,8 +1,8 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QSlider
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
-from PyQt5.QtCore import QUrl, QFileInfo, Qt, QTimer
 
+from PyQt5.QtCore import QUrl, QFileInfo, Qt, QTimer
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QSlider
 
 class MusicPlayer(QWidget):
     def __init__(self):
@@ -67,6 +67,9 @@ class MusicPlayer(QWidget):
 
         self.setLayout(self.layout)
 
+        self.label_track_name = QLabel()
+        self.layout.addWidget(self.label_track_name)
+
     def select_files(self):
         file_paths, _ = QFileDialog.getOpenFileNames(self, "Выберите аудиофайлы", "", "Audio Files (*.mp3)")
         if file_paths:
@@ -107,10 +110,11 @@ class MusicPlayer(QWidget):
     def update_time(self):
         current_time = self.player.position() / 1000
         self.label_status.setText(f"Прошло времени: {current_time} сек")
-
-    def print_state(self, state):
+        if self.playlist.currentIndex() != -1:
+            media = self.playlist.currentMedia()
+            self.label_track_name.setText("Текущий трек: " + media.canonicalUrl().fileName())
+    def print_state (self, state):
         print("Состояние проигрывателя изменилось:", state)
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
