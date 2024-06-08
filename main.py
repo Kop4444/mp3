@@ -2,6 +2,9 @@ import sys
 from PyQt5.QtCore import QUrl, QFileInfo, Qt, QTimer
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaPlaylist, QMediaContent
 from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton, QLabel, QFileDialog, QSlider
+from PyQt5.QtGui import QKeySequence
+from PyQt5.QtWidgets import QShortcut
+
 
 class MusicPlayer(QWidget):
     def __init__(self):
@@ -66,7 +69,18 @@ class MusicPlayer(QWidget):
 
         self.setLayout(self.layout)
 
-        self.check_playlist_empty() 
+        self.check_playlist_empty()
+
+        self.space_shortcut = QShortcut(QKeySequence("Space"), self)
+        self.space_shortcut.activated.connect(self.toggle_playback)
+
+        self.left_arrow_shortcut = QShortcut(QKeySequence(Qt.Key_Left), self)
+        self.left_arrow_shortcut.activated.connect(self.previous_track)
+
+        self.right_arrow_shortcut = QShortcut(QKeySequence(Qt.Key_Right), self)
+        self.right_arrow_shortcut.activated.connect(self.next_track)
+
+        self.setFocusPolicy(Qt.StrongFocus)
 
     def select_files(self):
         file_paths, _ = QFileDialog.getOpenFileNames(self, "Выберите аудиофайлы", "", "Audio Files (*.mp3)")
@@ -88,6 +102,9 @@ class MusicPlayer(QWidget):
     def stop(self):
         self.player.stop()
         self.timer.stop()
+
+    def backward(self):
+        self.player.setPosition(self.player.position() - 10000)
 
     def backward(self):
         self.player.setPosition(self.player.position() - 10000)
@@ -118,6 +135,25 @@ class MusicPlayer(QWidget):
     def check_playlist_empty(self):
         if self.playlist.isEmpty():
             self.label_status.setText("Трек не выбран")
+
+    def toggle_playback(self):
+        if self.player.state() == QMediaPlayer.PlayingState:
+            self.player.pause()
+        else:
+            self.player.play()
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Up:
+            self.forward_10_seconds()
+        elif event.key() == Qt.Key_Down:
+            self.backward_10_seconds()
+
+    def forward_10_seconds(self):
+        self.player.setPosition(self.player.position() + 10000)
+
+    def backward_10_seconds(self):
+        self.player.setPosition(self.player.position() - 10000)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
