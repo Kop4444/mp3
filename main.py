@@ -82,6 +82,26 @@ class MusicPlayer(QWidget):
 
         self.setFocusPolicy(Qt.StrongFocus)
 
+        self.btn_select_files.setStyleSheet("background-color: blue; color: white;")
+        self.btn_play.setStyleSheet(
+            "font-size: 24px; background-color: blue; color: white;")
+        self.btn_pause.setStyleSheet(
+            "font-size: 12px; background-color: blue; color: white;")
+        self.btn_forward.setStyleSheet("background-color: blue; color: white;")
+        self.btn_backward.setStyleSheet("background-color: blue; color: white;")
+        self.btn_next_track.setStyleSheet("background-color: blue; color: white;")
+        self.btn_previous_track.setStyleSheet("background-color: blue; color: white;")
+
+        self.setLayout(self.layout)
+
+        self.playlist.currentIndexChanged.connect(self.update_time)
+
+        self.setLayout(self.layout)
+
+        self.check_playlist_empty()
+
+        self.player.positionChanged.connect(self.update_time)
+
     def select_files(self):
         file_paths, _ = QFileDialog.getOpenFileNames(self, "Выберите аудиофайлы", "", "Audio Files (*.mp3)")
         if file_paths:
@@ -95,6 +115,7 @@ class MusicPlayer(QWidget):
     def play(self):
         if self.player.state() == QMediaPlayer.StoppedState:
             self.player.play()
+            self.player.setPosition(0)
             self.timer.start(1000)
         else:
             self.player.play()
@@ -153,6 +174,8 @@ class MusicPlayer(QWidget):
 
     def backward_10_seconds(self):
         self.player.setPosition(self.player.position() - 10000)
+
+
 
 
 if __name__ == '__main__':
